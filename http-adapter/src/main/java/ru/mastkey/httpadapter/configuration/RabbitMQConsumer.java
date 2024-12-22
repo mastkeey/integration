@@ -21,10 +21,11 @@ public class RabbitMQConsumer {
 
     @RabbitListener(queues = "queue1")
     public void processMyQueue(String message) {
+        log.info("Received message: {}", message);
         try {
             var entity = objectMapper.readValue(message, EpsEmployeeEntity.class);
             System.out.println("Deserialized entity: " + entity);
-            sendEmployeeToIpropusk.sendEmployeeToIpropusk(entity);
+            sendEmployeeToIpropusk.sendEmployeeToIpropusk(entity, message);
         } catch (IOException e) {
             System.err.println("Failed to deserialize message: " + e.getMessage());
             e.printStackTrace();

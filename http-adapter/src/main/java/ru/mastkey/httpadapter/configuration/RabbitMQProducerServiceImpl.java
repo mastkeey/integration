@@ -14,4 +14,8 @@ public class RabbitMQProducerServiceImpl implements RabbitMQProducerService {
     public void sendMessage(String message, String routingKey) {
         rabbitTemplate.convertAndSend("employee", routingKey, message);
     }
+
+    public void sendFailedMessage(String message, String routingKey) {
+        rabbitTemplate.convertAndSend("employee", routingKey, message);
+    }
 }

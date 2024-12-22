@@ -39,6 +39,10 @@ public class RabbitConf {
         return new Queue("queue2");
     }
 
+    public Queue failedQueue() {
+        return new Queue("failed");
+    }
+
 
     @Bean
     DirectExchange exchange() {
@@ -55,4 +59,8 @@ public class RabbitConf {
         return BindingBuilder.bind(myQueue2()).to(exchange).with("testKey2");
     }
 
+    @Bean
+    Binding bindingQueueFailed(DirectExchange exchange) {
+        return BindingBuilder.bind(failedQueue()).to(exchange).with("failed");
+    }
 }

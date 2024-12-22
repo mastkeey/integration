@@ -20,11 +20,16 @@ public class SendEmployeeToIpropusk {
     private final RabbitMQProducerServiceImpl rabbitMQProducerService;
 
     @SneakyThrows
-    public void sendEmployeeToIpropusk(EpsEmployeeEntity epsEmployeeEntity) {
-        var ipropuskRequest = new EmployeeIpropuskRequest(epsEmployeeEntity);
-        var iPropukEmployee = restTemplate.postForObject("http://localhost:8090/employee", ipropuskRequest, EmployeeIpropuskResponse.class);
-        epsEmployeeEntity.setIpropuskId(iPropukEmployee.getId());
-        log.info("updated entity : {}", epsEmployeeEntity);
-        rabbitMQProducerService.sendMessage(objectMapper.writeValueAsString(epsEmployeeEntity), "testKey2");
+    public void sendEmployeeToIpropusk(EpsEmployeeEntity epsEmployeeEntity, String message) {
+        try {
+            var ipropuskRequest = new EmployeeIpropuskRequest(epsEmployeeEntity);
+            var iPropukEmployee = restTemplate.postForObject("http://localhost:8090/employee", ipropuskRequest, EmployeeIpropuskResponse.class);
+            epsEmployeeEntity.setIpropuskId(iPropukEmployee.getId());
+            log.info("updated entity : {}", epsEmployeeEntity);
+            rabbitMQProducerService.sendMessage(objectMapper.writeValueAsString(epsEmployeeEntity), "testKey2");
+        } catch (Exception e) {
+            log.info("message publish to failed queue");
+            rabbitMQProducerService.sendFailedMessage(message, "failed");
+        }
     }
 }
